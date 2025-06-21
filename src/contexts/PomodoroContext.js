@@ -11,6 +11,12 @@ export const PomodoroProvider = ({ children }) => {
   const [onBreak, setOnBreak] = useState(false);
   const [completedPomodoros, setCompletedPomodoros] = useState(0);
 
+  const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
+
+  const triggerHistoryRefresh = () => {
+    setHistoryRefreshTrigger(prev => prev +1);
+  }
+
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
@@ -49,6 +55,8 @@ export const PomodoroProvider = ({ children }) => {
         },
         body: JSON.stringify({ duration })
       });
+
+      triggerHistoryRefresh();
     } catch(error) {
       console.log('Erro ao salvar pomodoro:', error);
     }
@@ -57,7 +65,7 @@ export const PomodoroProvider = ({ children }) => {
   const startTimer = () => setIsRunning(true);
   const pauseTimer = () => setIsRunning(false);
   const resetTimer = () => {
-    if (!onBreak) setTimer(1500);
+    if (!onBreak) setTimer(10);
   }
 
   return(
@@ -68,7 +76,8 @@ export const PomodoroProvider = ({ children }) => {
       completedPomodoros,
       startTimer,
       pauseTimer,
-      resetTimer
+      resetTimer,
+      historyRefreshTrigger
     }}>
       { children }
     </PomodoroContext.Provider>
