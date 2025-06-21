@@ -3,7 +3,7 @@ import { verifyToken } from "@/utils/auth";
 export async function authenticate(request) {
   const authHeader = request.headers.get('authorization');
 
-  if (!authHeader || authHeader.startsWith('Bearer ')) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new Error('Token não fornecido');
   }
 
