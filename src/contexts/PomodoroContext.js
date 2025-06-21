@@ -1,14 +1,17 @@
 'use client';
 
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
 export const PomodoroContext = createContext();
 
 export const PomodoroProvider = ({ children }) => {
-  const [timer, setTimer] = useState(1500);
+  const [timer, setTimer] = useState(10);
   const [isRunning, setIsRunning] = useState(false);
   const [onBreak, setOnBreak] = useState(false);
   const [completedPomodoros, setCompletedPomodoros] = useState(0);
+
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     let interval;
@@ -22,16 +25,34 @@ export const PomodoroProvider = ({ children }) => {
     if (timer === 0 && isRunning) {
       if (!onBreak) {
         setCompletedPomodoros(prev => prev + 1);
-        setTimer(300);
+        savePomodoro(10);
+        setTimer(5);
         setOnBreak(true);
       } else {
-        setTimer(1500);
+        setTimer(10);
         setOnBreak(false);
       }
     }
 
     return () => clearInterval(interval);
   }, [isRunning, timer, onBreak]);
+
+  const savePomodoro = async (duration) => {
+    try {
+      console.log(token);
+
+      await fetch('/api/pomodoros', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ duration })
+      });
+    } catch(error) {
+      console.log('Erro ao salvar pomodoro:', error);
+    }
+  };
 
   const startTimer = () => setIsRunning(true);
   const pauseTimer = () => setIsRunning(false);
