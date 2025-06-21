@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/app/application.scss';
 
+import { AuthProvider } from "@/contexts/AuthContext";
 import { PomodoroProvider } from "@/contexts/PomodoroContext";
 
 const geistSans = Geist({
@@ -24,9 +25,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <PomodoroProvider>
-          {children}
-        </PomodoroProvider>
+        <AuthProvider>
+          <PomodoroProvider>
+            {children}
+          </PomodoroProvider>
+        </AuthProvider>
       </body>
     </html>
   );
